@@ -12,7 +12,7 @@ Clone this repository:
 
 ```bash
 cd $HOME
-git clone https://github.com/hmakelin/gisnav_sim.git
+git clone https://github.com/hmakelin/gisnav-docker.git
 ```
 
 Build the Docker image:
