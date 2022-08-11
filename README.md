@@ -2,6 +2,10 @@
 
 This repository provides Docker scripts for building and running the PX4 SITL environment for testing GISNav.
 
+> **Note**
+>
+> Work-in-progress: These containers may not yet build
+
 ## Quick Start
 
 Clone this repository:
