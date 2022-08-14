@@ -16,4 +16,4 @@ micrortps_agent:
 	nohup micrortps_agent -t UDP &
 
 qgc:
-	${HOME}/QGroundControl.AppImage --appimage-extract-and-run
+	nohup ${HOME}/QGroundControl.AppImage --appimage-extract-and-run &
