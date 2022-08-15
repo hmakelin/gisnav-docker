@@ -53,4 +53,8 @@ RUN sudo mv gscam_params.yaml $HOME/
 COPY Makefile /
 RUN sudo mv Makefile $HOME/
 
+# Run check to make subsequent builds faster
+RUN cd $HOME/PX4-Autopilot && \
+    make check_px4_sitl_rtps gazebo_typhoon_h480__ksql_airport
+
 CMD cd $HOME && make HOME=$HOME gazebo
