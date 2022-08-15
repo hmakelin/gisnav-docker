@@ -1,6 +1,8 @@
 # GISNav SITL Simulation Environment
 
 This repository provides Docker scripts for building and running a PX4 SITL simulation environment for testing GISNav.
+The `px4-sitl` container launches a PX4 SITL simulation in Gazebo along with QGroundControl, `micrortps_agent` and 
+`gscam`, while the standalone `mapproxy` container runs a MapProxy WMS (proxy) server.
 
 ## Quick Start
 
@@ -34,6 +36,13 @@ Stop the simulation:
 
 ```bash
 docker-compose down
+```
+
+To run Gazebo in headless mode (for automated testing, for example), pass the `GAZEBO_HEADLESS=1` environment variable 
+when you run your container:
+
+```bash
+GAZEBO_HEADLESS=1 docker-compose up -d
 ```
 
 ## Troubleshooting
