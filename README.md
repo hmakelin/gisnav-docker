@@ -50,8 +50,8 @@ xhost +local:$(docker inspect --format='{{ .Config.Hostname }}' $containerId)
 If you need to do debugging, use the following command to run a bash shell inside your container:
 
 ```bash
-docker run -it --env="DISPLAY" --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" --privileged --tty --network host \
-  --entrypoint="/bin/bash" --gpus all gisnav-docker_px4-sitl
+docker run -it --env="DISPLAY" --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" --gpus all --tty --network host \
+  --entrypoint="/bin/bash" gisnav-docker_px4-sitl
 ```
 
 ## Repository Structure

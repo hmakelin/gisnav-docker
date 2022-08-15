@@ -15,7 +15,6 @@ services:
     build:
       context: .
       dockerfile: ./docker/px4-sitl/Dockerfile
-    privileged: true
     environment:
       - DISPLAY=${DISPLAY}
     volumes:
