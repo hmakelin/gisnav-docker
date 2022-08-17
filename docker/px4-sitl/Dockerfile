@@ -82,4 +82,7 @@ RUN sudo mv gscam_params.yaml $HOME/
 COPY Makefile /
 RUN sudo mv Makefile $HOME/
 
+# See https://docs.ros.org/en/dashing/Concepts/About-Domain-ID.html
+ENV ROS_DOMAIN_ID=0
+
 CMD cd $HOME && make HOME=$HOME gazebo
