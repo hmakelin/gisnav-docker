@@ -1,17 +1,17 @@
-"""Configure uORB RTPS message IDs
+"""Configures uORB RTPS topics
 
-This script configures the topics in either the uorb_rtps_message_ids.yaml or urtsp_bridge_topics.yaml microRTPS bridge
-client definition file in the PX4-Autopilot/msg/tools/ folder for use in GISNav SITL simulation.
+This script configures the topics in urtps_bridge_topics.yaml microRTPS bridge client definition file in the
+PX4-Autopilot/msg/tools/ folder for use in GISNav SITL simulation.
+
+Note: This script is not compatible with the older uorb_rtps_message_ids.yaml file (pre-v1.13.0).
 """
 import yaml
 import os
 
-# Note: the urtps_bridge_topics.yaml file used to be called uorb_rtps_message_ids.yaml, format has also changed
-DEFINITION_FILE_NEW = f'{os.environ.get("HOME", "")}/PX4-Autopilot/msg/tools/urtps_bridge_topics.yaml'
-DEFINITION_FILE_OLD = f'{os.environ.get("HOME", "")}/PX4-Autopilot/msg/tools/uorb_rtps_message_ids.yaml'
+DEFINITION_FILE = f'{os.environ.get("HOME", "")}/PX4-Autopilot/msg/tools/urtps_bridge_topics.yaml'
 
 SEND_TOPICS = ['vehicle_local_position', 'vehicle_global_position', 'vehicle_attitude', 'gimbal_device_set_attitude']
-RECEIVE_TOPICS = ['vehicle_gps_message']
+RECEIVE_TOPICS = ['sensor_gps']  # vehicle_gps_position was removed: https://github.com/PX4/PX4-Autopilot/commit/152230
 
 
 def add_send_true_to_dict(d: dict):
@@ -40,24 +40,19 @@ def configure_file(file):
 
         topic_list = definition.get('rtps', {})
 
-        if file == DEFINITION_FILE_NEW:
-            for topic in SEND_TOPICS:
-                topic_index = next((i for (i, d) in enumerate(topic_list) if d["msg"] == topic), None)
-                if topic_index is not None:
-                    topic_list[topic_index].update({'send': True})
-                else:
-                    topic_list.append({'msg': topic, 'send': True})
+        for topic in SEND_TOPICS:
+            topic_index = next((i for (i, d) in enumerate(topic_list) if d["msg"] == topic), None)
+            if topic_index is not None:
+                topic_list[topic_index].update({'send': True})
+            else:
+                topic_list.append({'msg': topic, 'send': True})
 
-            for topic in RECEIVE_TOPICS:
-                topic_index = next((i for (i, d) in enumerate(topic_list) if d["msg"] == topic), None)
-                if topic_index is not None:
-                    topic_list[topic_index].update({'receive': True})
-                else:
-                    topic_list.append({'msg': topic, 'receive': True})
-
-        elif file == DEFINITION_FILE_OLD:
-            topic_list = list(map(add_send_true_to_dict, topic_list))
-            topic_list = list(map(add_receive_true_to_dict, topic_list))
+        for topic in RECEIVE_TOPICS:
+            topic_index = next((i for (i, d) in enumerate(topic_list) if d["msg"] == topic), None)
+            if topic_index is not None:
+                topic_list[topic_index].update({'receive': True})
+            else:
+                topic_list.append({'msg': topic, 'receive': True})
 
         definition.update({'rtps': topic_list})
 
@@ -70,10 +65,7 @@ def configure_file(file):
 
 
 if __name__ == '__main__':
-    if os.path.exists(DEFINITION_FILE_NEW):
-        configure_file(DEFINITION_FILE_NEW)
-    elif os.path.exists(DEFINITION_FILE_OLD):
-        configure_file(DEFINITION_FILE_OLD)
+    if os.path.exists(DEFINITION_FILE):
+        configure_file(DEFINITION_FILE)
     else:
-        raise FileNotFoundError(f'RTPS bridge topics definition file not found in {os.environ.get("HOME", "")}/PX4'
-                                f'-Autopilot/msg/tools/.')
+        raise FileNotFoundError(f'RTPS bridge topics definition file "{DEFINITION_FILE}" not found.')
