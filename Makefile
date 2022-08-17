@@ -6,14 +6,14 @@ gazebo: gscam micrortps_agent qgc
 
 gscam:
 	source /opt/ros/foxy/setup.bash && \
-	source $HOME/colcon_ws/install/setup.bash && \
+	source ${HOME}/colcon_ws/install/setup.bash && \
 	cd ${HOME}/colcon_ws && \
 	nohup ros2 run gscam gscam_node --ros-args --params-file ${HOME}/gscam_params.yaml \
 		-p camera_info_url:=file://${HOME}/camera_calibration.yaml &
 
 micrortps_agent:
 	source /opt/ros/foxy/setup.bash && \
-	source $HOME/colcon_ws/install/setup.bash && \
+	source ${HOME}/colcon_ws/install/setup.bash && \
 	cd ${HOME}/colcon_ws && \
 	nohup micrortps_agent -t UDP &
 
