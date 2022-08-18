@@ -63,6 +63,14 @@ docker run -it --env="DISPLAY" --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" --gpu
   --entrypoint="/bin/bash" gisnav-docker_px4-sitl
 ```
 
+If you are trying to connect to the PX4-ROS 2 bridge inside the container from the host but it seems like the messages 
+are not coming through, ensure your `ROS_DOMAIN_ID` environment variable on your host matches what is used inside the 
+container (0 by default):
+
+```bash
+export ROS_DOMAIN_ID=0
+```
+
 ## Repository Structure
 
 This repository is structured as follows:

@@ -19,6 +19,7 @@ services:
       - DISPLAY=${DISPLAY}
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:ro
+      - /dev/shm:/dev/shm
     network_mode: host
     stdin_open: true
     tty: true

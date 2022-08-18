@@ -83,6 +83,7 @@ COPY Makefile /
 RUN sudo mv Makefile $HOME/
 
 # See https://docs.ros.org/en/dashing/Concepts/About-Domain-ID.html
-ENV ROS_DOMAIN_ID=0
+ARG ROS_DOMAIN_ID=0
+ENV ROS_DOMAIN_ID=${ROS_DOMAIN_ID}
 
 CMD cd $HOME && make HOME=$HOME gazebo
