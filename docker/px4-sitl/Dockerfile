@@ -28,6 +28,9 @@ RUN sudo apt-get install -y ros-foxy-gscam
 
 # Install QGroundControl
 RUN sudo apt-get install libfuse2
+RUN sudo apt-get -y remove modemmanager
+RUN sudo apt-get -y install gstreamer1.0-plugins-bad gstreamer1.0-libav gstreamer1.0-gl
+RUN sudo apt-get -y install libqt5gui5
 RUN wget -P $HOME https://d176tv9ibo4jno.cloudfront.net/latest/QGroundControl.AppImage
 RUN chmod +x $HOME/QGroundControl.AppImage
 
