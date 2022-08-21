@@ -59,8 +59,8 @@ xhost +local:$(docker inspect --format='{{ .Config.Hostname }}' $containerId)
 If you need to do debugging, use the following command to run a bash shell inside your container:
 
 ```bash
-docker run -it --env="DISPLAY" --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" --volume "/dev/shm:/dev/shm" --gpus all \
-  --tty --network host --entrypoint="/bin/bash" gisnav-docker_px4-sitl
+docker run -it --env="DISPLAY" --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" --volume "/dev/shm:/dev/shm" \
+  --volume="/dev/dri:/dev/dri" --gpus all --tty --network host --entrypoint="/bin/bash" gisnav-docker_px4-sitl
 ```
 
 If you are trying to connect to the PX4-ROS 2 bridge inside the container from the host but it seems like the messages 
