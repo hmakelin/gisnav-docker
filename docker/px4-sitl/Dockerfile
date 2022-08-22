@@ -82,6 +82,12 @@ RUN cd $HOME/PX4-Autopilot/Tools/sitl_gazebo/scripts && \
 RUN cd $HOME/PX4-Autopilot && \
     make px4_sitl_rtps
 
+# Install controller/joystick support
+RUN sudo apt-get -y install joystick jstest-gtk libcanberra-gtk-module libcanberra-gtk3-module
+RUN mkdir -p $HOME/.config && \
+    cd "$_" && \
+    touch jstest-gtk
+
 COPY yaml/camera_calibration.yaml /
 RUN sudo mv camera_calibration.yaml $HOME/
 
