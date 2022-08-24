@@ -64,7 +64,7 @@ RUN if [ -z "$WITH_GISNAV" ]; \
         else \
             echo "Installing GISNav."; \
             cd $HOME/colcon_ws/src; \
-            git clone --branch hmakelin-sensor-gps https://github.com/hmakelin/gisnav.git; \
+            git clone https://github.com/hmakelin/gisnav.git; \
             cd gisnav; \
             git submodule update --init gisnav/pose_estimators/third_party/LoFTR; \
             pip3 install -r requirements.txt; \
