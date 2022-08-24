@@ -21,9 +21,14 @@ Build the Docker image:
 > Replace the example `MAPPROXY_TILE_URL` string below with your own tile-based endpoint url (e.g. WMTS). See
 > [MapProxy configuration examples][2] for more information on how to format the string.
 
+> **Note**
+> Leave out the `WITH_GISNAV` build argument if you intend to run GISNav on your host or install it separately (e.g. 
+> building a base image for automated testing of latest GISNav version in a GitHub Actions workflow)
+
 ```bash
 cd gisnav-docker
-docker-compose build --build-arg MAPPROXY_TILE_URL="https://<your-map-server-url>/tiles/%(z)s/%(y)s/%(x)s"
+docker-compose build --build-arg MAPPROXY_TILE_URL="https://<your-map-server-url>/tiles/%(z)s/%(y)s/%(x)s" \
+  --build-arg WITH_GISNAV
 ```
 
 Run the simulation:

@@ -1,5 +1,12 @@
 from px4io/px4-dev-ros2-foxy
 
+# Optional install GISNav build arg
+# Used e.g. for a quick demo setup, no need for ROS 2 on host. For development however it's probably best to install
+# GISNav on host and to not provide this build argument. Also for making an image to run automated tests on latest
+# development versions GISNav, it's probably best to the image without this build argument.
+ARG WITH_GISNAV
+ENV WITH_GISNAV=$WITH_GISNAV
+
 # Get a combination of commits that works together
 # In the past there have been breaking changes concerning microRTPS bridge generation
 # See e.g. https://github.com/PX4/PX4-Autopilot/pull/18052
@@ -50,6 +57,24 @@ RUN git clone https://github.com/PX4/PX4-Autopilot.git $HOME/PX4-Autopilot --rec
     git checkout $PX4_AUTOPILOT_COMMIT && \
     bash $HOME/PX4-Autopilot/Tools/setup/ubuntu.sh --no-nuttx
 
+# Install GISNav if required
+RUN if [ -z "$WITH_GISNAV" ]; \
+        then \
+            echo "Skipping GISNav installation."; \
+        else \
+            echo "Installing GISNav."; \
+            cd $HOME/colcon_ws/src; \
+            git clone --branch hmakelin-sensor-gps https://github.com/hmakelin/gisnav.git; \
+            cd gisnav; \
+            git submodule update --init gisnav/pose_estimators/third_party/LoFTR; \
+            pip3 install -r requirements.txt; \
+            pip3 install -r requirements-dev.txt; \
+            pip3 install gdown; \
+            mkdir weights; \
+            cd weights; \
+            $HOME/.local/lib/$USERNAME/gdown https://drive.google.com/uc?id=1M-VD35-qdB5Iw-AtbDBCKC7hPolFW9UY; \
+    fi
+
 # Mock GPS demo simulation configuration for typhoon_h480 build target
 # In the future these should probably be made simulation parameters and not hard-coded here
 RUN printf "\n\
@@ -69,8 +94,14 @@ RUN sudo mv configure_urtps_bridge_topics.py $HOME/ &&\
 
 # Generate topics definition file for px4_ros_com and build ROS 2 workspace
 RUN cd $HOME/PX4-Autopilot/Tools && sudo ./update_px4_ros2_bridge.sh --ws_dir $HOME/colcon_ws --all
-RUN cd $HOME/colcon_ws/src/px4_ros_com/scripts &&\
-    ./build_ros2_workspace.bash
+RUN cd $HOME/colcon_ws/ &&\
+    src/px4_ros_com/scripts/build_ros2_workspace.bash --verbose
+
+# --symlink-install (build_ros2_workspace.bash script) does not work with gisnav so re-build here if needed
+RUN if ! [ -z "$WITH_GISNAV" ]; then \
+        cd $HOME/colcon_ws && \
+            colcon build --packages-select gisnav; \
+    fi
 
 # Before building PX4 target:
 # Use non-default gst_udp_port so that QGC does not block the video stream
@@ -86,7 +117,7 @@ RUN cd $HOME/PX4-Autopilot && \
 RUN sudo apt-get -y install joystick jstest-gtk libcanberra-gtk-module libcanberra-gtk3-module
 RUN mkdir -p $HOME/.config && \
     cd "$_" && \
-    touch jstest-gtk
+    sudo touch jstest-gtk
 
 COPY yaml/camera_calibration.yaml /
 RUN sudo mv camera_calibration.yaml $HOME/
