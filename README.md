@@ -21,9 +21,14 @@ Build the Docker image:
 > Replace the example `MAPPROXY_TILE_URL` string below with your own tile-based endpoint url (e.g. WMTS). See
 > [MapProxy configuration examples][2] for more information on how to format the string.
 
+> **Note**
+> Leave out the `WITH_GISNAV` build argument if you intend to run GISNav on your host or install it separately (e.g. 
+> building a base image for automated testing of latest GISNav version in a GitHub Actions workflow)
+
 ```bash
 cd gisnav-docker
-docker-compose build --build-arg MAPPROXY_TILE_URL="https://<your-map-server-url>/tiles/%(z)s/%(y)s/%(x)s"
+docker-compose build --build-arg MAPPROXY_TILE_URL="https://<your-map-server-url>/tiles/%(z)s/%(y)s/%(x)s" \
+  --build-arg WITH_GISNAV
 ```
 
 Run the simulation:
@@ -59,8 +64,16 @@ xhost +local:$(docker inspect --format='{{ .Config.Hostname }}' $containerId)
 If you need to do debugging, use the following command to run a bash shell inside your container:
 
 ```bash
-docker run -it --env="DISPLAY" --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" --gpus all --tty --network host \
-  --entrypoint="/bin/bash" gisnav-docker_px4-sitl
+docker run -it --env="DISPLAY" --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" --volume "/dev/shm:/dev/shm" \
+  --volume="/dev/dri:/dev/dri" --gpus all --tty --network host --entrypoint="/bin/bash" gisnav-docker_px4-sitl
+```
+
+If you are trying to connect to the PX4-ROS 2 bridge inside the container from the host but it seems like the messages 
+are not coming through, ensure your `ROS_DOMAIN_ID` environment variable on your host matches what is used inside the 
+container (0 by default):
+
+```bash
+export ROS_DOMAIN_ID=0
 ```
 
 ## Repository Structure
