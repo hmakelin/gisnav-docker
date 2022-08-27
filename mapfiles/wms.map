@@ -1,0 +1,24 @@
+MAP
+  NAME "GISNav WMS"
+  PROJECTION
+    "init=epsg:4326"
+  END
+  EXTENT -122.3153963 37.4973779 -122.1845578 37.5650967
+  WEB
+    METADATA
+        "wms_title"           "GISNav WMS NAIP Imagery"
+        "wms_onlineresource"  "http://localhost:8080/?map=/etc/mapserver/wms.map"
+        "wms_srs"             "EPSG:3857 EPSG:4326"
+        "wms_enable_request"  "GetMap GetCapabilities"
+    END
+  END
+  LAYER
+    NAME          "naip-natural-color-raster"
+    DATA          "/etc/mapserver/naip.vrt"
+    STATUS DEFAULT
+    TYPE RASTER
+    PROJECTION
+      "init=epsg:26910"
+    END
+  END
+END
