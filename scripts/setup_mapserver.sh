@@ -19,7 +19,7 @@ apt-get update && apt-get -y install unzip python3-pip
 pip3 install gdown
 if ! [ -f "$ZIP_FILENAME" ]; then \
   echo -e "Downloading NAIP imagery."; \
-  gdown $GDOWN_URL -O $ZIP_FILENAME; \
+  gdown $GDOWN_ID -O $ZIP_FILENAME; \
   unzip $ZIP_FILENAME; \
 fi
 
