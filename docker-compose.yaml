@@ -1,6 +1,18 @@
 version: "3"
 
 services:
+  mapserver:
+    image: camptocamp/mapserver
+    ports:
+      - "80:80"
+    environment:
+      - GDOWN_ID=16M_kbsLpF3t87KC2n9YgqGEBA5h0lG7U
+      - MAPSERVER_PATH=/etc/mapserver
+    volumes:
+      - $PWD/mapfiles/wms.map:$MAPSERVER_PATH/wms.map:ro
+      - $PWD/scripts/setup_mapserver.sh:$MAPSERVER_PATH/setup_mapserver.sh:ro
+    entrypoint: $MAPSERVER_PATH/setup_mapserver.sh
+
   mapproxy:
     build:
       context: .
