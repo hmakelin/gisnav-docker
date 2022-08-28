@@ -10,7 +10,7 @@ ENV WITH_GISNAV=$WITH_GISNAV
 # Get a combination of commits that works together
 # In the past there have been breaking changes concerning microRTPS bridge generation
 # See e.g. https://github.com/PX4/PX4-Autopilot/pull/18052
-ARG PX4_AUTOPILOT_COMMIT=deb938fceaa79b927ae0f622d8b2b8c4ad10d391
+ARG PX4_AUTOPILOT_COMMIT=715afd27f58a89d31aa4289a4b8681fb0e5014e9
 ARG PX4_ROS_COM_COMMIT=90538d841a383fe9631b7046096f9aa808a43121
 ARG PX4_MSGS_COMMIT=7f89976091235579633935b7ccaab68b2debbe19
 
