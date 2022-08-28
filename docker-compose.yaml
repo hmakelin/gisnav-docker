@@ -7,11 +7,10 @@ services:
       - "80:80"
     environment:
       - GDOWN_ID=16M_kbsLpF3t87KC2n9YgqGEBA5h0lG7U
-      - MAPSERVER_PATH=/etc/mapserver
     volumes:
-      - $PWD/mapfiles/wms.map:$MAPSERVER_PATH/wms.map:ro
-      - $PWD/scripts/setup_mapserver.sh:$MAPSERVER_PATH/setup_mapserver.sh:ro
-    entrypoint: $MAPSERVER_PATH/setup_mapserver.sh
+      - $PWD/mapfiles/wms.map:/etc/mapserver/wms.map:ro
+      - $PWD/scripts/setup_mapserver.sh:/etc/mapserver/setup_mapserver.sh:ro
+    entrypoint: /etc/mapserver/setup_mapserver.sh
 
   mapproxy:
     build:
