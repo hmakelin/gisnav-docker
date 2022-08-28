@@ -124,6 +124,8 @@ This repository is structured as follows:
 │   └── px4-sitl
 │        └── Dockerfile                     # Dockerfile for the PX4 Gazebo simulator & dependencies
 ├── docker-compose.yaml
+├── flight_plans
+│    └── ksql_airport.plan                  # Sample flight plan for px4-sitl image
 ├── LICENSE.md
 ├── Makefile                                # Makefile used by px4-sitl (used inside container, not on host)
 ├── mapfiles
@@ -137,7 +139,7 @@ This repository is structured as follows:
     ├── gscam_params.yaml                   # Configuration file used by px4-sitl
     └── mapproxy.yaml                       # Configuration file used by mapproxy
 
-6 directories, 12 files
+7 directories, 13 files
 ```
 
 ## License
