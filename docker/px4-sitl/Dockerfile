@@ -125,6 +125,9 @@ RUN sudo mv camera_calibration.yaml $HOME/
 COPY yaml/gscam_params.yaml /
 RUN sudo mv gscam_params.yaml $HOME/
 
+COPY flight_plans/ksql_airport.plan /
+RUN sudo mv ksql_airport.plan $HOME/
+
 COPY Makefile /
 RUN sudo mv Makefile $HOME/
 
