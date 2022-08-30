@@ -135,4 +135,4 @@ RUN sudo mv Makefile $HOME/
 ARG ROS_DOMAIN_ID=0
 ENV ROS_DOMAIN_ID=${ROS_DOMAIN_ID}
 
-CMD cd $HOME && make HOME=$HOME gazebo
+CMD cd $HOME && make HOME=$HOME WITH_GISNAV=$WITH_GISNAV gazebo
