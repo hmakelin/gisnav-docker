@@ -9,6 +9,9 @@ gisnav:
 		then \
 			echo "WITH_GISNAV env variable not provided for build, will not attempt to run GISNav."; \
 		else \
+			echo "Running GISNav."; \
+			echo "nvidia-smi output:"; \
+			nvidia-smi; \
 			source /opt/ros/foxy/setup.bash; \
 			source ${HOME}/colcon_ws/install/setup.bash; \
 			cd ${HOME}/colcon_ws; \

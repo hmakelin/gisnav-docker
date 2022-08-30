@@ -106,7 +106,7 @@ RUN if ! [ -z "$WITH_GISNAV" ]; then \
 # Before building PX4 target:
 # Use non-default gst_udp_port so that QGC does not block the video stream
 # TODO: make less brittle, might break or introduce unintended effects if jinja_gen.py is changed
-RUN cd $HOME/PX4-Autopilot/Tools/sitl_gazebo/scripts && \
+RUN cd $HOME/PX4-Autopilot/Tools/simulation/gazebo/sitl_gazebo/scripts && \
     sed -i '0,/5600/{s//5601/}' jinja_gen.py
 
 # Make initial PX4 build
@@ -118,6 +118,9 @@ RUN sudo apt-get -y install joystick jstest-gtk libcanberra-gtk-module libcanber
 RUN mkdir -p $HOME/.config && \
     cd "$_" && \
     sudo touch jstest-gtk
+
+# Install some utilities
+RUN sudo sudo apt-get -y install ~nros-foxy-rqt* vim
 
 COPY yaml/camera_calibration.yaml /
 RUN sudo mv camera_calibration.yaml $HOME/
@@ -135,4 +138,4 @@ RUN sudo mv Makefile $HOME/
 ARG ROS_DOMAIN_ID=0
 ENV ROS_DOMAIN_ID=${ROS_DOMAIN_ID}
 
-CMD cd $HOME && make HOME=$HOME gazebo
+CMD cd $HOME && make HOME=$HOME WITH_GISNAV=$WITH_GISNAV gazebo
