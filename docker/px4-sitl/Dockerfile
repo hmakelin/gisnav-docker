@@ -119,6 +119,9 @@ RUN mkdir -p $HOME/.config && \
     cd "$_" && \
     sudo touch jstest-gtk
 
+# Install some utilities
+RUN sudo sudo apt-get -y install ~nros-foxy-rqt* vim
+
 COPY yaml/camera_calibration.yaml /
 RUN sudo mv camera_calibration.yaml $HOME/
 
