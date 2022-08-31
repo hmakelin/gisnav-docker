@@ -79,11 +79,13 @@ RUN if [ -z "$WITH_GISNAV" ]; \
 # In the future these should probably be made simulation parameters and not hard-coded here
 RUN printf "\n\
 param set-default NAV_ACC_RAD 20.0\n\
-param set-default MPC_YAWRAUTO_MAX 10.0\n\
+param set-default MPC_YAWRAUTO_MAX 22.5.0\n\
 param set-default COM_POS_FS_DELAY 5\n\
+param set-default COM_POS_FS_EPH 10\n\
 param set-default EKF2_GPS_P_NOISE 10\n\
+param set-default EKF2_GPS_P_GATE 7\n\
 param set-default EKF2_GPS_V_NOISE 3\n\
-param set-default SENS_GPS_MASK 2\n\
+param set-default SENS_GPS_MASK 4\n\
 " >> $HOME/PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/6011_typhoon_h480
 
 # Install pyyaml dependency and run the Python script
