@@ -7,13 +7,13 @@ MAP
   WEB
     METADATA
         "wms_title"           "GISNav WMS NAIP Imagery"
-        "wms_onlineresource"  "http://localhost:80/?map=/etc/mapserver/wms.map"
+        "wms_onlineresource"  "http://localhost:80/wms"
         "wms_srs"             "EPSG:3857 EPSG:4326"
         "wms_enable_request"  "GetMap GetCapabilities"
     END
   END
   LAYER
-    NAME          "naip-natural-color-raster"
+    NAME          "imagery"
     DATA          "/etc/mapserver/naip.vrt"
     STATUS DEFAULT
     TYPE RASTER

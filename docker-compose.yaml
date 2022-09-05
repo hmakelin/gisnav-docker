@@ -8,7 +8,7 @@ services:
     environment:
       - GDOWN_ID=16M_kbsLpF3t87KC2n9YgqGEBA5h0lG7U
     volumes:
-      - $PWD/mapfiles/wms.map:/etc/mapserver/wms.map:ro
+      - $PWD/mapfiles/mapserver.map:/etc/mapserver/mapserver.map:ro
       - $PWD/scripts/setup_mapserver.sh:/etc/mapserver/setup_mapserver.sh:ro
     entrypoint: /etc/mapserver/setup_mapserver.sh
 
@@ -16,10 +16,6 @@ services:
     build:
       context: .
       dockerfile: ./docker/mapproxy/Dockerfile
-      args:
-        CONFIG_FILE: yaml/mapproxy.yaml
-        HOST: localhost
-        PORT: 8080
     network_mode: host
 
   px4-sitl-dev:

@@ -1,8 +1,8 @@
 FROM ubuntu:20.04
 
-ARG CONFIG_FILE=yaml/mapproxy.yaml
+ARG CONFIG_FILE=mapproxy/mapproxy.yaml
 ARG HOST=localhost
-ARG PORT=8080
+ARG PORT=80
 ARG MAPPROXY_TILE_URL
 
 ENV CONFIG_FILE=${CONFIG_FILE}

@@ -1,5 +1,5 @@
 layers:
-  - name: Imagery
+  - name: imagery
     title: High resolution satellite or aerial imagery.
     sources: [imagery_cache]
 
