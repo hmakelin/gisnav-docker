@@ -1,4 +1,4 @@
-version: "3"
+version: "2"
 
 services:
   mapserver:
@@ -22,10 +22,11 @@ services:
         PORT: 8080
     network_mode: host
 
-  px4-sitl:
+  px4-sitl-dev:
     build:
       context: .
       dockerfile: ./docker/px4-sitl/Dockerfile
+      target: px4-sitl-dev
     environment:
       - DISPLAY=${DISPLAY}
     volumes:
@@ -35,10 +36,11 @@ services:
     network_mode: host
     stdin_open: true
     tty: true
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [ gpu ]
+    runtime: nvidia
+
+  # Swap the target build stage for 'px4-sitl', otherwise same as 'px4-sitl-dev'
+  px4-sitl:
+    extends:
+      service: px4-sitl-dev
+    build:
+      target: px4-sitl
