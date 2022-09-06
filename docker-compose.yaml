@@ -1,4 +1,4 @@
-version: "3"
+version: "3.4"
 
 services:
   mapserver:
@@ -8,7 +8,7 @@ services:
     environment:
       - GDOWN_ID=16M_kbsLpF3t87KC2n9YgqGEBA5h0lG7U
     volumes:
-      - $PWD/mapfiles/wms.map:/etc/mapserver/wms.map:ro
+      - $PWD/mapfiles/mapserver.map:/etc/mapserver/mapserver.map:ro
       - $PWD/scripts/setup_mapserver.sh:/etc/mapserver/setup_mapserver.sh:ro
     entrypoint: /etc/mapserver/setup_mapserver.sh
 
@@ -16,18 +16,17 @@ services:
     build:
       context: .
       dockerfile: ./docker/mapproxy/Dockerfile
-      args:
-        CONFIG_FILE: yaml/mapproxy.yaml
-        HOST: localhost
-        PORT: 8080
     network_mode: host
 
-  px4-sitl:
+  px4-sitl-dev:
     build:
       context: .
       dockerfile: ./docker/px4-sitl/Dockerfile
+      target: px4-sitl-dev
     environment:
       - DISPLAY=${DISPLAY}
+      - LAUNCH_QGC=${LAUNCH_QGC:-1}
+      - GAZEBO_HEADLESS=${GAZEBO_HEADLESS}
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:ro
       - /dev/shm:/dev/shm
@@ -42,3 +41,29 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [ gpu ]
+
+  # Swap the target build stage for 'px4-sitl', otherwise same as 'px4-sitl-dev'
+  px4-sitl:
+    build:
+      context: .
+      dockerfile: ./docker/px4-sitl/Dockerfile
+      target: px4-sitl
+    environment:
+      - DISPLAY=${DISPLAY}
+      - LAUNCH_QGC=${LAUNCH_QGC:-1}
+      - GAZEBO_HEADLESS=${GAZEBO_HEADLESS}
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:ro
+      - /dev/shm:/dev/shm
+      - /dev/dri:/dev/dri
+    network_mode: host
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+
