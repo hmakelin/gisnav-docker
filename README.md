@@ -74,10 +74,7 @@ If you are doing automated testing ([e.g. with mavsdk][7]), you can run Gazebo i
 QGroundControl by setting `GAZEBO_HEADLESS=1` and `LAUNCH_QGC=0`:
 
 ```bash
-docker-compose run -d \
-  -e GAZEBO_HEADLESS=1 \
-  -e LAUNCH_QGC=0 \
-  mapserver px4-sitl
+GAZEBO_HEADLESS=1 LAUNCH_QGC=0 docker-compose up -d mapserver px4-sitl
 ```
 
 If you need to do debugging on e.g. `px4-sitl`, you can use the following command to run a bash shell inside the 
