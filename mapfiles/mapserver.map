@@ -15,7 +15,6 @@ MAP
   LAYER
     NAME          "imagery"
     DATA          "/etc/mapserver/naip.vrt"
-    STATUS DEFAULT
     TYPE RASTER
     PROJECTION
       "init=epsg:26910"
