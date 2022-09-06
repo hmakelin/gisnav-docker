@@ -43,9 +43,10 @@ docker-compose up mapserver px4-sitl
 >   Currently the default configuration has an URL that works with `mapserver`.
 
 ```bash
-docker compose run \
-  -e MAPPROXY_TILE_URL="https://<your-map-server-url>/tiles/%(z)s/%(y)s/%(x)s" \
-  mapproxy px4-sitl
+docker-compose build \
+  --build-arg MAPPROXY_TILE_URL="https://<your-map-server-url>/tiles/%(z)s/%(y)s/%(x)s" \
+  mapproxy
+docker-compose up mapproxy px4-sitl
 ```
 
 ### Shutdown
