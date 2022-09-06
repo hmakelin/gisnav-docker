@@ -39,8 +39,6 @@ docker-compose up mapserver px4-sitl
 > **Note**
 > * Replace the example `MAPPROXY_TILE_URL` string below with your own tile-based endpoint url (e.g. WMTS). See
 >   [MapProxy configuration examples][5] for more information on how to format the string.
-> * You should edit the `wms.url` ROS 2 parameter in GISNav's launch configuration to match your WMS proxy's URL. 
->   Currently the default configuration has an URL that works with `mapserver`.
 
 ```bash
 docker-compose build \
