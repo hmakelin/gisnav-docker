@@ -4,7 +4,11 @@ gazebo: gscam micrortps_agent qgc
 	cd ${HOME}/PX4-Autopilot && \
 	make HEADLESS=${GAZEBO_HEADLESS} px4_sitl_rtps gazebo_typhoon_h480__ksql_airport
 
-gisnav: gazebo
+gazebo_with_gisnav: gscam micrortps_agent qgc gisnav
+	cd ${HOME}/PX4-Autopilot && \
+	make HEADLESS=${GAZEBO_HEADLESS} px4_sitl_rtps gazebo_typhoon_h480__ksql_airport
+
+gisnav:
 	echo "Running GISNav." && \
 	echo "nvidia-smi output:" && \
 	nvidia-smi && \

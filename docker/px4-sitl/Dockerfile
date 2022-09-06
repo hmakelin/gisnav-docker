@@ -133,11 +133,14 @@ ENV LAUNCH_QGC=${LAUNCH_QGC}
 RUN cd $HOME/colcon_ws/src && \
     git clone https://github.com/hmakelin/gisnav.git && \
     cd gisnav && \
-    git submodule update --init gisnav/pose_estimators/third_party/LoFTR && \
+    git submodule update --init gisnav/pose_estimators/third_party/LoFTR
+
+# Install GISNav (part 2)
+RUN cd $HOME/colcon_ws/src/gisnav && \
     pip3 install -r requirements.txt && \
     pip3 install -r requirements-dev.txt
 
-# Install GISNav (part 2: setup LoFTR weights)
+# Install GISNav (part 3)
 RUN cd $HOME/colcon_ws/src/gisnav && \
     pip3 install gdown && \
     mkdir weights && \
@@ -149,4 +152,4 @@ RUN cd $HOME/colcon_ws && \
     colcon build --packages-select gisnav
 
 # Launch GISNav
-CMD cd $HOME && make gisnav
+CMD cd $HOME && make gazebo_with_gisnav
