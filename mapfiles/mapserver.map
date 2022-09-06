@@ -24,7 +24,6 @@ MAP
   LAYER
     NAME          "osm-buildings"
     DATA          "/etc/mapserver/osm-buildings-ksql-airport.tif"
-    STATUS DEFAULT
     TYPE RASTER
     PROJECTION
       "init=epsg:4326"
