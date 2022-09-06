@@ -1,5 +1,5 @@
 MAP
-  NAME "GISNav WMS"
+  NAME "GISNav OGC WMS"
   PROJECTION
     "init=epsg:4326"
   END
@@ -19,6 +19,15 @@ MAP
     TYPE RASTER
     PROJECTION
       "init=epsg:26910"
+    END
+  END
+  LAYER
+    NAME          "osm-buildings"
+    DATA          "/etc/mapserver/osm-buildings-ksql-airport.tif"
+    STATUS DEFAULT
+    TYPE RASTER
+    PROJECTION
+      "init=epsg:4326"
     END
   END
 END
