@@ -6,7 +6,8 @@ services:
     ports:
       - "80:80"
     environment:
-      - GDOWN_ID=16M_kbsLpF3t87KC2n9YgqGEBA5h0lG7U
+      - NAIP_GDOWN_ID=16M_kbsLpF3t87KC2n9YgqGEBA5h0lG7U
+      - OSM_GDOWN_ID=1snGYjWxs71m6I-qxKsmUzch_bAfQtrEW
     volumes:
       - $PWD/mapfiles/mapserver.map:/etc/mapserver/mapserver.map:ro
       - $PWD/scripts/setup_mapserver.sh:/etc/mapserver/setup_mapserver.sh:ro
