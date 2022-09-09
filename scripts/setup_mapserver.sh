@@ -27,13 +27,13 @@ fi
 
 # Download OSM Buildings vector data if download ID given
 OSM_ZIP_FILENAME="osm-buildings-ksql-airport.zip"  # does not have to match uploaded file name
-if ! [ -z "$OSM_GDOWN_ID" ]; \
+if ! [ -z "$OSM_GDOWN_ID" ] && ! [ -f "$OSM_ZIP_FILENAME" ]; \
   then \
     echo -e "Downloading OSM Buildings data..."; \
     gdown $OSM_GDOWN_ID -O $OSM_ZIP_FILENAME; \
     unzip $OSM_ZIP_FILENAME; \
   else \
-    echo -e "No download ID for OSM Buildings data provided, skipping download."; \
+    echo -e "No download ID for OSM Buildings data provided or data already downloaded, skipping download."; \
 fi
 
 # Create VRT file from NAIP GeoTIFFs
