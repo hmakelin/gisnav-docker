@@ -49,7 +49,7 @@ sim_vehicle: ardupilot_gazebo
 	cd ${HOME}/ardupilot && \
 	source /opt/ros/foxy/setup.bash && \
 	. ~/.profile && \
-	sim_vehicle.py -v ArduCopter -f gazebo-iris -L KSQL_Airport
+	python3 Tools/autotest/sim_vehicle.py -v ArduCopter -f gazebo-iris -L KSQL_Airport
 
 mavros:
 	cd ${HOME} && \
