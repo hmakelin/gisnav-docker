@@ -130,8 +130,9 @@ ARG LAUNCH_QGC=1
 ENV LAUNCH_QGC=${LAUNCH_QGC}
 
 # Install required and/or useful tools
-RUN sudo apt-get -y install git gitk git-gui vim python3-pip wget curl python-is-python3 \
-      ~nros-foxy-rqt* ros-foxy-gazebo-ros-pkgs && \
+RUN sudo apt-get update --fix-missing && \
+    sudo apt-get -y install git gitk git-gui vim python3-pip wget curl python-is-python3 \
+    ~nros-foxy-rqt* ros-foxy-gazebo-ros-pkgs && \
     pip install --upgrade pymavlink MAVProxy pexpect
 
 # Clone ArduPilot and update submodules
@@ -169,7 +170,10 @@ RUN cd $HOME && \
     sudo bash ./install_geographiclib_datasets.sh
 
 # Add KSQL airport location
-RUN echo "KSQL_Airport=37.523640,-122.255122,1.7,90" >> $HOME/ardupilot/Tools/autotest/locations.txt
+# Disable GPS arming check (GPS2 will not work until already flying) and use GPS blending
+RUN echo "KSQL_Airport=37.523640,-122.255122,1.7,90" >> $HOME/ardupilot/Tools/autotest/locations.txt && \
+    echo "ARMING_CHECK 0" >> $HOME/ardupilot/Tools/autotest/default_params/gazebo-iris.parm && \
+    echo "GPS_AUTO_SWITCH 2" >> $HOME/ardupilot/Tools/autotest/default_params/gazebo-iris.parm
 
 # Make initial build
 RUN cd $HOME/ardupilot && \

@@ -45,14 +45,16 @@ qgc:
 			echo "Skipping QGC launch."; \
 	fi
 
+# Disable GPS arming check (GPS2 will not work until flying) and blend GPS
 sim_vehicle: ardupilot_gazebo
 	cd ${HOME}/ardupilot && \
 	source /opt/ros/foxy/setup.bash && \
 	. ~/.profile && \
-	python3 Tools/autotest/sim_vehicle.py -v ArduCopter -f gazebo-iris -L KSQL_Airport
+	python3 Tools/autotest/sim_vehicle.py -v ArduCopter -f gazebo-iris -L KSQL_Airport \
+	-m '--cmd="module load GPSInput"'
 
 mavros:
 	cd ${HOME} && \
 	source /opt/ros/foxy/setup.bash && \
 	. ~/.profile && \
-	ros2 run mavros mavros_node --ros-args --param fcu_url:=udp://0.0.0.0:14551@14555 &
+	ros2 run mavros mavros_node --ros-args --param fcu_url:=udp-pb://127.0.0.1:14551@14555 &
