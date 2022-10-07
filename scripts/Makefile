@@ -45,7 +45,6 @@ qgc:
 			echo "Skipping QGC launch."; \
 	fi
 
-# Disable GPS arming check (GPS2 will not work until flying) and blend GPS
 sim_vehicle: ardupilot_gazebo
 	cd ${HOME}/ardupilot && \
 	source /opt/ros/foxy/setup.bash && \
