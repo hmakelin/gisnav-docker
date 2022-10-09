@@ -59,4 +59,4 @@ mavros:
 	source /opt/ros/foxy/setup.bash && \
 	source /usr/share/gazebo/setup.sh && \
 	source ~/.profile && \
-	ros2 run mavros mavros_node --ros-args --param fcu_url:=udp://127.0.0.1:14551@14555 &
+	ros2 run mavros mavros_node --ros-args --param fcu_url:=udp-b://127.0.0.1:14551@14555 &
