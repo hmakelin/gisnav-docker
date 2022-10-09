@@ -28,6 +28,7 @@ services:
       - DISPLAY=${DISPLAY}
       - LAUNCH_QGC=${LAUNCH_QGC:-1}
       - GAZEBO_HEADLESS=${GAZEBO_HEADLESS}
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:ro
       - /dev/shm:/dev/shm

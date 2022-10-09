@@ -68,6 +68,8 @@ docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml build -d sitl
 
 ## Troubleshooting
 
+### Expose `xhost`
+
 If the Gazebo and QGroundControl windows do not appear on your screen soon after running your container you may need to 
 expose your ``xhost`` to your Docker container as described in the [ROS GUI Tutorial][7]:
 
@@ -76,6 +78,8 @@ export containerId=$(docker ps -l -q)
 xhost +local:$(docker inspect --format='{{ .Config.Hostname }}' $containerId)
 ```
 
+### Set ROS_DOMAIN_ID
+
 If you do not seem to be receiving any telemetry from the container to your host's ROS 2 node, ensure the
 `ROS_DOMAIN_ID` environment variable on your host matches the container's *(0 by default)*:
 
@@ -83,12 +87,16 @@ If you do not seem to be receiving any telemetry from the container to your host
 export ROS_DOMAIN_ID=0
 ```
 
+### Run in headless mode
+
 If you are doing automated testing ([e.g. with mavsdk][8]), you can run Gazebo in headless mode and not launch 
 QGroundControl by setting `GAZEBO_HEADLESS=1` and `LAUNCH_QGC=0`:
 
 ```bash
 GAZEBO_HEADLESS=1 LAUNCH_QGC=0 docker-compose up -d mapserver sitl
 ```
+
+### Run shell inside container
 
 If you need to do debugging on `sitl`, you can use the following command to run bash inside the container:
 
@@ -105,6 +113,25 @@ docker run -it \
   gisnav-docker_sitl
 ```
 
+### Disable Fast DDS on host
+
+> [RTPS_TRANSPORT_SHM Error] Failed init_port fastrtps_port7412: open_and_lock_file failed -> Function 
+> open_port_internal
+
+If you are not able to establish ROS communication between the container and the host when using the 
+`docker-compose.dev.yaml` override and receive the above error, try disabling Fast DDS on your host. 
+You can do so by creating an XML configuration (e.g. `disable_fastrtps.xml`) as described in [this comment][9] and 
+restarting ROS 2 daemon with the new configuration:
+
+```bash
+export FASTRTPS_DEFAULT_PROFILES_FILE=$PWD/disable_fastrtps.xml
+ros2 daemon stop
+ros2 daemon start
+```
+
+[9]: https://github.com/eProsima/Fast-DDS/issues/1698#issuecomment-778039676
+
+
 ## Repository Structure
 
 This repository is structured as follows:
@@ -120,7 +147,8 @@ This repository is structured as follows:
 ├── docker-compose.dev.yaml                 # docker-compose sitl-dev build target
 ├── docker-compose.yaml                     # docker-compose base configuration
 ├── flight_plans
-│    └── ksql_airport.plan                  # Sample flight plan for SITL
+│    ├── ksql_airport_ardupilot.plan        # Sample flight plan for ArduPilot SITL
+│    └── ksql_airport.plan                  # Sample flight plan for PX4 SITL
 ├── LICENSE.md
 ├── mapfiles
 │    └── wms.map                            # Mapfile for setting up WMS on MapServer
@@ -135,7 +163,7 @@ This repository is structured as follows:
     ├── camera_calibration.yaml             # Configuration file used by px4-sitl-dev
     └── gscam_params.yaml                   # Configuration file used by px4-sitl-dev
 
-8 directories, 15 files
+8 directories, 16 files
 ```
 
 ## License

@@ -54,6 +54,9 @@ RUN git clone https://github.com/PX4/px4_ros_com.git $HOME/colcon_ws/src/px4_ros
 RUN git clone https://github.com/PX4/px4_msgs.git $HOME/colcon_ws/src/px4_msgs
 
 # Install PX4-Autopilot
+# Install libignition-common3-core-dev and libignition-common3-av-dev separately with dpkg --force-overwrite enabled
+RUN sudo apt-get -y install -o Dpkg::Options::="--force-overwrite" \
+    libignition-common3-core-dev libignition-common3-av-dev
 RUN git clone https://github.com/PX4/PX4-Autopilot.git $HOME/PX4-Autopilot --recursive && \
     bash $HOME/PX4-Autopilot/Tools/setup/ubuntu.sh --no-nuttx
 
@@ -162,6 +165,10 @@ RUN cd $HOME && \
     cmake .. && \
     make -j4 && \
     sudo make install
+
+RUN echo 'source /usr/share/gazebo/setup.sh' >> ~/.bashrc && \
+    echo 'export GAZEBO_MODEL_PATH=~/ardupilot_gazebo/models' >> ~/.bashrc && \
+    echo 'export GAZEBO_RESOURCE_PATH=~/ardupilot_gazebo/worlds:${GAZEBO_RESOURCE_PATH}' >> ~/.bashrc
 
 # Install MAVROS
 RUN sudo apt-get -y install ros-foxy-mavros ros-foxy-mavros-extras

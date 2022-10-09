@@ -1,8 +1,10 @@
 SHELL:=/bin/bash
 
-ardupilot_gazebo: qgc mavros
+ardupilot_gazebo: qgc
 	cd ${HOME} && \
 	source /opt/ros/foxy/setup.bash && \
+	source /usr/share/gazebo/setup.sh && \
+	source ~/.profile && \
 	if [ -z ${GAZEBO_HEADLESS} ]; then \
 		gazebo --verbose worlds/ksql_airport.world & \
 	else \
@@ -45,15 +47,16 @@ qgc:
 			echo "Skipping QGC launch."; \
 	fi
 
-sim_vehicle: ardupilot_gazebo
+sim_vehicle: ardupilot_gazebo mavros
 	cd ${HOME}/ardupilot && \
 	source /opt/ros/foxy/setup.bash && \
-	. ~/.profile && \
+	source ~/.profile && \
 	python3 Tools/autotest/sim_vehicle.py -v ArduCopter -f gazebo-iris -L KSQL_Airport \
 	-m '--cmd="module load GPSInput"'
 
 mavros:
 	cd ${HOME} && \
 	source /opt/ros/foxy/setup.bash && \
-	. ~/.profile && \
-	ros2 run mavros mavros_node --ros-args --param fcu_url:=udp-pb://127.0.0.1:14551@14555 &
+	source /usr/share/gazebo/setup.sh && \
+	source ~/.profile && \
+	ros2 run mavros mavros_node --ros-args --param fcu_url:=udp://127.0.0.1:14551@14555 &
