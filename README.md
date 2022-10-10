@@ -156,12 +156,12 @@ This repository is structured as follows:
 │    └── mapproxy.yaml                      # Configuration file used by mapproxy
 ├── README.md
 ├── scripts
-│    └── configure_urtps_bridge_topics.py   # Configuration script used by px4-sitl-dev
+│    └── configure_urtps_bridge_topics.py   # Configuration script used by PX4 sitl image
 │    └── Makefile                           # Makefile used by SITL images
 │    └── setup_mapserver.sh                 # Configuration script used by mapserver
 └── yaml
-    ├── camera_calibration.yaml             # Configuration file used by px4-sitl-dev
-    └── gscam_params.yaml                   # Configuration file used by px4-sitl-dev
+    ├── camera_calibration.yaml             # Configuration file used by PX4 sitl image
+    └── gscam_params.yaml                   # Configuration file used by PX4 sitl image
 
 8 directories, 16 files
 ```
