@@ -178,8 +178,11 @@ RUN cd $HOME && \
 
 # Add KSQL airport location
 # Disable GPS arming check (GPS2 will not work until already flying) and use GPS blending
+# Use MAVLink (14) for second GPS type
 RUN echo "KSQL_Airport=37.523640,-122.255122,1.7,90" >> $HOME/ardupilot/Tools/autotest/locations.txt && \
     echo "ARMING_CHECK 0" >> $HOME/ardupilot/Tools/autotest/default_params/gazebo-iris.parm && \
+    echo "GPS_TYPE 14" >> $HOME/ardupilot/Tools/autotest/default_params/gazebo-iris.parm && \
+    echo "SIM_GPS2_TYPE 14" >> $HOME/ardupilot/Tools/autotest/default_params/gazebo-iris.parm && \
     echo "GPS_AUTO_SWITCH 2" >> $HOME/ardupilot/Tools/autotest/default_params/gazebo-iris.parm
 
 # Make initial build
