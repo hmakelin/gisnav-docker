@@ -191,6 +191,9 @@ RUN cd $HOME/ardupilot && \
     $(python3 Tools/autotest/sim_vehicle.py -v ArduCopter -f gazebo-iris -L KSQL_Airport | grep -m 1 "BUILD SUMMARY") \
       || echo "Gazebo built."
 
+COPY flight_plans/ksql_airport_ardupilot.plan /
+RUN sudo mv ksql_airport_ardupilot.plan $HOME/
+
 # Launch Gazebo
 CMD cd $HOME && make px4_gazebo
 
