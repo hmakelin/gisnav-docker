@@ -177,13 +177,18 @@ RUN cd $HOME && \
     sudo bash ./install_geographiclib_datasets.sh
 
 # Add KSQL airport location
-# Disable GPS arming check (GPS2 will not work until already flying) and use GPS blending
+# Disable GPS arming check (GPS2 will not work until already flying) and use best GPS
 # Use MAVLink (14) for second GPS type
+# Use 2D position only with EK2 (no velocity estimates)
 RUN echo "KSQL_Airport=37.523640,-122.255122,1.7,90" >> $HOME/ardupilot/Tools/autotest/locations.txt && \
     echo "ARMING_CHECK 0" >> $HOME/ardupilot/Tools/autotest/default_params/gazebo-iris.parm && \
-    echo "GPS_TYPE 14" >> $HOME/ardupilot/Tools/autotest/default_params/gazebo-iris.parm && \
+    echo "AHRS_EKF_TYPE 2" >> $HOME/ardupilot/Tools/autotest/default_params/gazebo-iris.parm && \
+    echo "EK2_ENABLE 1" >> $HOME/ardupilot/Tools/autotest/default_params/gazebo-iris.parm && \
+    echo "EK3_ENABLE 0" >> $HOME/ardupilot/Tools/autotest/default_params/gazebo-iris.parm && \
+    echo "EK2_GPS_TYPE 2" >> $HOME/ardupilot/Tools/autotest/default_params/gazebo-iris.parm && \
+    echo "GPS_TYPE2 14" >> $HOME/ardupilot/Tools/autotest/default_params/gazebo-iris.parm && \
     echo "SIM_GPS2_TYPE 14" >> $HOME/ardupilot/Tools/autotest/default_params/gazebo-iris.parm && \
-    echo "GPS_AUTO_SWITCH 2" >> $HOME/ardupilot/Tools/autotest/default_params/gazebo-iris.parm
+    echo "GPS_AUTO_SWITCH 1" >> $HOME/ardupilot/Tools/autotest/default_params/gazebo-iris.parm
 
 # Make initial build
 RUN cd $HOME/ardupilot && \
