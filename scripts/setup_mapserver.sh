@@ -57,5 +57,7 @@ if ! [ -z "$OSM_GDOWN_ID" ]; \
 fi
 
 
-# Setup complete, start MapServer
+# Setup complete, start MapServer with default mapfile
+MS_MAPFILE=/etc/mapserver/mapserver.map
+export MS_MAPFILE
 /usr/local/bin/start-server

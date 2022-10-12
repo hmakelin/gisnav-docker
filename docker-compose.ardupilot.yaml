@@ -1,0 +1,5 @@
+version: "3.4"
+
+services:
+  sitl:
+    entrypoint: ["bash", "-c", "cd /home/gisnav && make sim_vehicle"]

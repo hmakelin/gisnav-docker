@@ -40,12 +40,12 @@ RUN mkdir -p $HOME/.config && \
 RUN sudo sudo apt-get -y install ~nros-foxy-rqt* vim
 
 # Install QGroundControl
-RUN sudo apt-get install libfuse2
-RUN sudo apt-get -y remove modemmanager
-RUN sudo apt-get -y install gstreamer1.0-plugins-bad gstreamer1.0-libav gstreamer1.0-gl
-RUN sudo apt-get -y install libqt5gui5
-RUN wget -P $HOME https://d176tv9ibo4jno.cloudfront.net/latest/QGroundControl.AppImage
-RUN chmod +x $HOME/QGroundControl.AppImage
+RUN sudo apt-get install libfuse2 && \
+    sudo apt-get -y remove modemmanager && \
+    sudo apt-get -y install gstreamer1.0-plugins-bad gstreamer1.0-libav gstreamer1.0-gl && \
+    sudo apt-get -y install libqt5gui5 && \
+    wget -P $HOME https://d176tv9ibo4jno.cloudfront.net/latest/QGroundControl.AppImage && \
+    chmod +x $HOME/QGroundControl.AppImage
 
 # Clone px4_ros_com
 RUN git clone https://github.com/PX4/px4_ros_com.git $HOME/colcon_ws/src/px4_ros_com
@@ -54,6 +54,9 @@ RUN git clone https://github.com/PX4/px4_ros_com.git $HOME/colcon_ws/src/px4_ros
 RUN git clone https://github.com/PX4/px4_msgs.git $HOME/colcon_ws/src/px4_msgs
 
 # Install PX4-Autopilot
+# Install libignition-common3-core-dev and libignition-common3-av-dev separately with dpkg --force-overwrite enabled
+RUN sudo apt-get -y install -o Dpkg::Options::="--force-overwrite" \
+    libignition-common3-core-dev libignition-common3-av-dev
 RUN git clone https://github.com/PX4/PX4-Autopilot.git $HOME/PX4-Autopilot --recursive && \
     bash $HOME/PX4-Autopilot/Tools/setup/ubuntu.sh --no-nuttx
 
@@ -94,17 +97,17 @@ RUN cd $HOME/PX4-Autopilot/Tools/simulation/gazebo/sitl_gazebo/scripts && \
     sed -i '0,/5600/{s//5601/}' jinja_gen.py
 
 # Make initial PX4 build
-# Piping the output to grep will make it stop once the "px4 starting." output is observed
-# The first command will exit with an error code so it is "handled" with the last command after ||
 RUN cd $HOME/PX4-Autopilot && \
     echo "Building gazebo target..." && \
-    make px4_sitl_rtps gazebo_typhoon_h480__ksql_airport | grep -m 1 "px4 starting." || echo "Gazebo target built."
-
-COPY yaml/camera_calibration.yaml /
-RUN sudo mv camera_calibration.yaml $HOME/
+    (HEADLESS=1 make px4_sitl_rtps gazebo_typhoon_h480__ksql_airport &) | \
+      grep -m 1 "Startup script returned successfully" && \
+    pkill px4
 
 COPY yaml/gscam_params.yaml /
 RUN sudo mv gscam_params.yaml $HOME/
+
+COPY yaml/camera_calibration.yaml /
+RUN sudo mv camera_calibration.yaml $HOME/
 
 COPY flight_plans/ksql_airport.plan /
 RUN sudo mv ksql_airport.plan $HOME/
@@ -113,12 +116,96 @@ COPY scripts/Makefile /
 RUN sudo mv Makefile $HOME/
 
 # Launch Gazebo
-CMD cd $HOME && make gazebo
+CMD cd $HOME && make px4_gazebo
 
-########################
-# px4-sitl BUILD STAGE #
-########################
-FROM px4-sitl-dev as px4-sitl
+##################################
+# ardupilot-sitl-dev BUILD STAGE #
+##################################
+FROM px4-sitl-dev as sitl-dev
+
+ARG USERNAME=gisnav
+USER $USERNAME
+
+ARG ROS_DOMAIN_ID=0
+ENV ROS_DOMAIN_ID=${ROS_DOMAIN_ID}
+
+ARG LAUNCH_QGC=1
+ENV LAUNCH_QGC=${LAUNCH_QGC}
+
+# Install required and/or useful tools
+RUN sudo apt-get update --fix-missing && \
+    sudo apt-get -y install git gitk git-gui vim python3-pip wget curl python-is-python3 \
+    ~nros-foxy-rqt* ros-foxy-gazebo-ros-pkgs && \
+    pip install --upgrade pymavlink MAVProxy pexpect
+
+# Clone ArduPilot and update submodules
+RUN cd $HOME && \
+    git clone https://github.com/ArduPilot/ardupilot && \
+    cd ardupilot && \
+    git submodule update --init --recursive
+
+# Install ArduPilot prerequisites
+# The script requires the USER env variable be set to ${USERNAME}
+#RUN sudo usermod -a -G dialout $USERNAME
+#RUN exec sg dialout newgrp `id -gn` && \
+RUN cd $HOME/ardupilot/ && \
+    export USER=$USERNAME && \
+    Tools/environment_install/install-prereqs-ubuntu.sh -y && \
+    . ~/.profile
+
+# Update PATH
+ENV PATH="/usr/lib/ccache:${PATH}:${HOME}/ardupilot/Tools/autotest"
+
+# Install Gazebo plugin
+RUN cd $HOME && \
+    git clone https://github.com/hmakelin/ardupilot_gazebo && \
+    cd ardupilot_gazebo && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make -j4 && \
+    sudo make install
+
+RUN echo 'source /usr/share/gazebo/setup.sh' >> ~/.bashrc && \
+    echo 'export GAZEBO_MODEL_PATH=~/ardupilot_gazebo/models' >> ~/.bashrc && \
+    echo 'export GAZEBO_RESOURCE_PATH=~/ardupilot_gazebo/worlds:${GAZEBO_RESOURCE_PATH}' >> ~/.bashrc
+
+# Install MAVROS
+RUN sudo apt-get -y install ros-foxy-mavros ros-foxy-mavros-extras
+RUN cd $HOME && \
+    wget https://raw.githubusercontent.com/mavlink/mavros/master/mavros/scripts/install_geographiclib_datasets.sh && \
+    sudo bash ./install_geographiclib_datasets.sh
+
+# Add KSQL airport location
+# Disable GPS arming check (GPS2 will not work until already flying) and use best GPS
+# Use MAVLink (14) for second GPS type
+# Use 2D position only with EK2 (no velocity estimates)
+RUN echo "KSQL_Airport=37.523640,-122.255122,1.7,90" >> $HOME/ardupilot/Tools/autotest/locations.txt && \
+    echo "ARMING_CHECK 0" >> $HOME/ardupilot/Tools/autotest/default_params/gazebo-iris.parm && \
+    echo "AHRS_EKF_TYPE 2" >> $HOME/ardupilot/Tools/autotest/default_params/gazebo-iris.parm && \
+    echo "EK2_ENABLE 1" >> $HOME/ardupilot/Tools/autotest/default_params/gazebo-iris.parm && \
+    echo "EK3_ENABLE 0" >> $HOME/ardupilot/Tools/autotest/default_params/gazebo-iris.parm && \
+    echo "EK2_GPS_TYPE 2" >> $HOME/ardupilot/Tools/autotest/default_params/gazebo-iris.parm && \
+    echo "GPS_TYPE2 14" >> $HOME/ardupilot/Tools/autotest/default_params/gazebo-iris.parm && \
+    echo "SIM_GPS2_TYPE 14" >> $HOME/ardupilot/Tools/autotest/default_params/gazebo-iris.parm && \
+    echo "GPS_AUTO_SWITCH 1" >> $HOME/ardupilot/Tools/autotest/default_params/gazebo-iris.parm
+
+# Make initial build
+RUN cd $HOME/ardupilot && \
+    . ~/.profile && \
+    $(python3 Tools/autotest/sim_vehicle.py -v ArduCopter -f gazebo-iris -L KSQL_Airport | grep -m 1 "BUILD SUMMARY") \
+      || echo "Gazebo built."
+
+COPY flight_plans/ksql_airport_ardupilot.plan /
+RUN sudo mv ksql_airport_ardupilot.plan $HOME/
+
+# Launch Gazebo
+CMD cd $HOME && make px4_gazebo
+
+####################
+# sitl BUILD STAGE #
+####################
+FROM sitl-dev as sitl
 
 ARG USERNAME=gisnav
 USER $USERNAME
@@ -152,4 +239,4 @@ RUN cd $HOME/colcon_ws && \
     colcon build --packages-select gisnav
 
 # Launch GISNav
-CMD cd $HOME && make gazebo_with_gisnav
+CMD cd $HOME && make px4_gazebo

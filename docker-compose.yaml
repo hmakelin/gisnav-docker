@@ -19,15 +19,16 @@ services:
       dockerfile: ./docker/mapproxy/Dockerfile
     network_mode: host
 
-  px4-sitl-dev:
+  sitl:
     build:
       context: .
-      dockerfile: ./docker/px4-sitl/Dockerfile
-      target: px4-sitl-dev
+      dockerfile: docker/sitl/Dockerfile
+      target: sitl
     environment:
       - DISPLAY=${DISPLAY}
       - LAUNCH_QGC=${LAUNCH_QGC:-1}
       - GAZEBO_HEADLESS=${GAZEBO_HEADLESS}
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:ro
       - /dev/shm:/dev/shm
@@ -42,29 +43,3 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [ gpu ]
-
-  # Swap the target build stage for 'px4-sitl', otherwise same as 'px4-sitl-dev'
-  px4-sitl:
-    build:
-      context: .
-      dockerfile: ./docker/px4-sitl/Dockerfile
-      target: px4-sitl
-    environment:
-      - DISPLAY=${DISPLAY}
-      - LAUNCH_QGC=${LAUNCH_QGC:-1}
-      - GAZEBO_HEADLESS=${GAZEBO_HEADLESS}
-    volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix:ro
-      - /dev/shm:/dev/shm
-      - /dev/dri:/dev/dri
-    network_mode: host
-    stdin_open: true
-    tty: true
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [ gpu ]
-
