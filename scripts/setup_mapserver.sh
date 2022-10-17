@@ -60,12 +60,26 @@ fi
 # Download USGS DEM: https://www.sciencebase.gov/catalog/item/62f5de86d34eacf53973ab2a
 # Attribution: "Map services and data available from U.S. Geological Survey, National Geospatial Program."
 DEM_FILENAME="USGS_13_n38w123_20220810.tif"
+DEM_4326_FILENAME="USGS_13_n38w123_20220810__EPSG_4326.tif"
 if ! [ -f "$DEM_FILENAME" ]; \
   then \
     echo "Downloading digital elevation model (DEM)..."; \
     wget "https://prd-tnm.s3.amazonaws.com/StagedProducts/Elevation/13/TIFF/historical/n38w123/USGS_13_n38w123_20220810.tif"
+    cp $OSM_TIF_FILENAME $DEM_4326_FILENAME
+    gdalwarp $DEM_FILENAME $DEM_4326_FILENAME # -s_srs EPSG:4269 -t_srs EPSG:4326
   else \
     echo "Digital elevation model (DEM) already downloaded."; \
+fi
+
+# Calculate compound elevation layer as sum of OSM Buildings and USGS DEM (units are meters)
+# Assume DEM is low resolution enough to not model the buildings already included in OSM Buildings
+COMPOUND_FILENAME="osm-buildings-dem.tif"
+if [ -f "$DEM_4326_FILENAME" -a -f "$OSM_TIF_FILENAME" ] && ! [ -f "$COMPOUND_FILENAME" ]; \
+  then \
+    echo "Calculating compound elevation layer..."; \
+    gdal_calc.py -A $DEM_4326_FILENAME -B $OSM_TIF_FILENAME --outfile=$COMPOUND_FILENAME --calc="A+B" --extent=intersect
+  else \
+    echo "OSM Buildings or DEM missing, or compound layer already calculated."; \
 fi
 
 # Setup complete, start MapServer with default mapfile
