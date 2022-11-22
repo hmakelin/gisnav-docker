@@ -70,8 +70,8 @@ docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml build -d sitl
 
 ### Prebuilt Docker images
 The versions of the dependencies of the Docker script are currently not fixed, and many of them are under active 
-development. The script may therefore break and make building the images challenging. You can try out these pre-built
- and `gisnav-mapserver` images for the mock GPS demo:
+development. The script may therefore break and make building the images challenging. You can try out these pre-built 
+images for the mock GPS demo:
 * [gisnav-sitl][7]
 * [gisnav-mapserver][8]
 
