@@ -68,10 +68,17 @@ docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml build -d sitl
 
 ## Troubleshooting
 
+### Prebuilt Docker images
+The versions of the dependencies of the Docker script are currently not fixed, and many of them are under active 
+development. The script may therefore break and make building the images challenging. You can try out these pre-built
+ and `gisnav-mapserver` images for the mock GPS demo:
+* [gisnav-sitl][7]
+* [gisnav-mapserver][8]
+
 ### Expose `xhost`
 
 If the Gazebo and QGroundControl windows do not appear on your screen soon after running your container you may need to 
-expose your ``xhost`` to your Docker container as described in the [ROS GUI Tutorial][7]:
+expose your ``xhost`` to your Docker container as described in the [ROS GUI Tutorial][9]:
 
 ```bash
 export containerId=$(docker ps -l -q)
@@ -89,7 +96,7 @@ export ROS_DOMAIN_ID=0
 
 ### Run in headless mode
 
-If you are doing automated testing ([e.g. with mavsdk][8]), you can run Gazebo in headless mode and not launch 
+If you are doing automated testing ([e.g. with mavsdk][10]), you can run Gazebo in headless mode and not launch 
 QGroundControl by setting `GAZEBO_HEADLESS=1` and `LAUNCH_QGC=0`:
 
 ```bash
@@ -120,7 +127,7 @@ docker run -it \
 
 If you are not able to establish ROS communication between the container and the host when using the 
 `docker-compose.dev.yaml` override and receive the above error, try disabling Fast DDS on your host. 
-You can do so by creating an XML configuration (e.g. `disable_fastrtps.xml`) as described in [this comment][9] and 
+You can do so by creating an XML configuration (e.g. `disable_fastrtps.xml`) as described in [this comment][11] and 
 restarting ROS 2 daemon with the new configuration:
 
 ```bash
@@ -128,9 +135,6 @@ export FASTRTPS_DEFAULT_PROFILES_FILE=$PWD/disable_fastrtps.xml
 ros2 daemon stop
 ros2 daemon start
 ```
-
-[9]: https://github.com/eProsima/Fast-DDS/issues/1698#issuecomment-778039676
-
 
 ## Repository Structure
 
@@ -176,5 +180,8 @@ This software is released under the MIT license. See the `LICENSE.md` file for m
 [4]: https://osmbuildings.org/
 [5]: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html
 [6]: https://mapproxy.org/docs/latest/configuration_examples.html
-[7]: http://wiki.ros.org/docker/Tutorials/GUI
-[8]: https://github.com/hmakelin/gisnav/blob/master/test/sitl/sitl_test_mock_gps_node.py
+[7]: https://hub.docker.com/r/hmakelin/gisnav-sitl
+[8]: https://hub.docker.com/r/hmakelin/gisnav-mapserver
+[9]: http://wiki.ros.org/docker/Tutorials/GUI
+[10]: https://github.com/hmakelin/gisnav/blob/master/test/sitl/sitl_test_mock_gps_node.py
+[11]: https://github.com/eProsima/Fast-DDS/issues/1698#issuecomment-778039676
