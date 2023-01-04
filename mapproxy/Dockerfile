@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 
-ARG CONFIG_FILE=mapproxy/mapproxy.yaml
+ARG CONFIG_FILE=yaml/mapproxy.yaml
 ARG HOST=localhost
 ARG PORT=80
 ARG MAPPROXY_TILE_URL
@@ -28,11 +28,10 @@ RUN apt-get update && \
     pip3 install MapProxy
 
 # Copy configuration file over to $HOME
+# MapProxy config files can't use environment variables so do tile URL substitution manually
 COPY ${CONFIG_FILE} /
-RUN mv $(basename $CONFIG_FILE) $HOME/$(basename $CONFIG_FILE)
-
-# MapProxy config files can't use environment variables so do substitution manually
-RUN sed -i -e "s#\$MAPPROXY_TILE_URL#$MAPPROXY_TILE_URL#g" $HOME/$(basename $CONFIG_FILE)
+RUN mv $(basename $CONFIG_FILE) $HOME/$(basename $CONFIG_FILE) && \
+    sed -i -e "s#\$MAPPROXY_TILE_URL#$MAPPROXY_TILE_URL#g" $HOME/$(basename $CONFIG_FILE)
 
 # Expose port for incoming WMS requests
 EXPOSE $PORT/tcp

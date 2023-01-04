@@ -3,5 +3,4 @@ version: "3.4"
 services:
   sitl:
     build:
-      target: sitl-dev
-    image: sitl-dev
+      target: sitl-demo
