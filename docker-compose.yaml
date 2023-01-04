@@ -9,22 +9,24 @@ services:
       - NAIP_GDOWN_ID=16M_kbsLpF3t87KC2n9YgqGEBA5h0lG7U
       - OSM_GDOWN_ID=1snGYjWxs71m6I-qxKsmUzch_bAfQtrEW
     volumes:
-      - $PWD/mapfiles/mapserver.map:/etc/mapserver/mapserver.map:ro
-      - $PWD/scripts/setup_mapserver.sh:/etc/mapserver/setup_mapserver.sh:ro
+      - $PWD/mapserver/mapfiles/mapserver.map:/etc/mapserver/mapserver.map:ro
+      - $PWD/mapserver/setup_mapserver.sh:/etc/mapserver/setup_mapserver.sh:ro
     entrypoint: /etc/mapserver/setup_mapserver.sh
 
   mapproxy:
     build:
-      context: .
-      dockerfile: ./docker/mapproxy/Dockerfile
+      context: mapproxy
+      dockerfile: mapproxy/Dockerfile
     network_mode: host
 
   sitl:
+    image: sitl
     build:
-      context: .
-      dockerfile: docker/sitl/Dockerfile
+      context: sitl
+      dockerfile: Dockerfile
       target: sitl
     environment:
+      - QT_X11_NO_MITSHM=1
       - DISPLAY=${DISPLAY}
       - LAUNCH_QGC=${LAUNCH_QGC:-1}
       - GAZEBO_HEADLESS=${GAZEBO_HEADLESS}
